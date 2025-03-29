@@ -70,6 +70,7 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
     <div className="bg-white rounded-lg shadow-md border border-gray-200 flex flex-col">
         {/* --- Top Section (Logo, Name, Recommended) --- */}
         <div className='p-4'>
+            {/*
             {plan.recommended && (
                 <div className="relative mb-2">
                     <div className="absolute -top-4 -left-4 bg-yellow-300 text-yellow-900 text-xs font-bold px-3 py-1 rounded-tl-lg rounded-br-lg"
@@ -78,6 +79,7 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
                     </div>
                 </div>
             )}
+            */}
              {/* Placeholder for Plan Logo */}
              <div className="h-8 w-20 bg-gray-200 mb-2 mt-2 flex items-center justify-center text-gray-500 text-xs rounded">Logo</div>
 
@@ -109,7 +111,7 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
             {/* --- Highlights (Always Visible) --- */}
             <div className="py-3 px-1">
                 <h3 className="font-semibold text-base mb-2 text-gray-700">Highlights</h3>
-                 <DataRow label="Monthly premium" value={<> <span className="text-lg">{formatCost(plan.monthlyPremium)}</span>/mo {plan.originalPremium && <span className="text-gray-500 line-through ml-1">was {formatCost(plan.originalPremium)}</span>} </>} />
+                 <DataRow label="Monthly premium" value={<> <span className="text-lg">{formatCost(plan.monthlyPremium)}</span>/mo </>} />
                 <DataRow label="Deductible" value={formatCost(plan.deductible)} />
                 <DataRow label="Max out-of-pocket" value={formatCost(plan.maxOutOfPocket)} />
                 <DataRow label="Tier" value={plan.tier} />
@@ -156,7 +158,8 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
              </CollapsibleSection>
         </div>
 
-        {/* --- CTA Buttons --- */}
+        {/* --- CTA Buttons --- REMOVED */}
+       {/*
        <div className="mt-auto p-4 border-t">
          <div className="flex justify-between gap-2">
             <button className="flex-1 border border-gray-700 hover:bg-gray-100 text-gray-800 font-semibold py-2 px-3 rounded text-sm transition duration-150 ease-in-out">
@@ -167,6 +170,7 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
             </button>
          </div>
        </div>
+       */}
     </div>
   );
 };
