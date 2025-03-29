@@ -1,98 +1,168 @@
 import React, { useState } from 'react';
 import { type HealthPlan } from '../types/HealthPlan';
-import { FaStar, FaRegStar, FaCheckCircle, FaInfoCircle } from 'react-icons/fa'; // Example icons
+import { FaStar, FaRegStar, FaCheckCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa'; // Add Chevrons, remove FaInfoCircle if not used
 
 interface PlanCardProps {
   plan: HealthPlan;
 }
 
-const formatCurrency = (value: number | string) => {
-  if (typeof value === 'string') return value;
-  return `$${value.toLocaleString()}`;
+// Updated formatting function
+const formatCost = (value: number | string, perUnit = ''): string => {
+  if (typeof value === 'number') {
+    return `$${value}${perUnit}`;
+  }
+  return value; // Return strings like 'Full price', '20% Coinsurance' directly
 };
 
-const formatCost = (value: number | string, suffix = '') => {
-  if (typeof value === 'string') return value;
-  return `$${value}${suffix}`;
+// Component for each collapsible section
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+const CollapsibleSection: React.FC<SectionProps> = ({ title, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border-t">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex justify-between items-center w-full py-3 px-1 text-left text-gray-700 hover:bg-gray-50 focus:outline-none"
+      >
+        <span className="font-semibold text-base">{title}</span>
+        {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+      </button>
+      {isOpen && (
+        <div className="pb-4 px-1">
+          {children}
+        </div>
+      )}
+    </div>
+  );
 };
+
+// Component for displaying a single data row within a section
+interface DataRowProps {
+  label: string;
+  value: React.ReactNode;
+}
+
+const DataRow: React.FC<DataRowProps> = ({ label, value }) => (
+  <div className="flex justify-between items-center py-1.5 text-sm">
+    <span className="text-gray-600">{label}</span>
+    <span className="text-gray-900 font-medium text-right">{value}</span>
+  </div>
+);
 
 const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
-  // State for the pre/post deductible toggle (functionality later)
-  const [showPostDeductible, setShowPostDeductible] = useState(false);
+  const [showPostDeductible, setShowPostDeductible] = useState(false); // Keep the toggle state
 
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
+      // Using the icons that should now compile correctly after React downgrade
       stars.push(i <= rating ? <FaStar key={i} className="text-yellow-400" /> : <FaRegStar key={i} className="text-gray-300" />);
     }
     return <div className="flex">{stars}</div>;
   };
 
-  // --- Component Sections --- TODO
-
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col">
-      {/* Recommended Badge */}
-      {plan.recommended && (
-        <div className="bg-yellow-100 text-yellow-800 text-sm font-semibold px-3 py-1 rounded-full inline-flex items-center mb-3 self-start">
-          <FaInfoCircle className="mr-1" /> We recommend this plan
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 flex flex-col">
+        {/* --- Top Section (Logo, Name, Recommended) --- */}
+        <div className='p-4'>
+            {plan.recommended && (
+                <div className="relative mb-2">
+                    <div className="absolute -top-4 -left-4 bg-yellow-300 text-yellow-900 text-xs font-bold px-3 py-1 rounded-tl-lg rounded-br-lg"
+                         style={{clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%)'}}>
+                        Recommended
+                    </div>
+                </div>
+            )}
+             {/* Placeholder for Plan Logo */}
+             <div className="h-8 w-20 bg-gray-200 mb-2 mt-2 flex items-center justify-center text-gray-500 text-xs rounded">Logo</div>
+
+            <h2 className="text-sm font-semibold mb-2 leading-tight" title={plan.planName}>{plan.planNameShort || plan.planName}</h2>
         </div>
-      )}
 
-      {/* Plan Name and Premium */}
-      <h2 className="text-lg font-bold mb-1" title={plan.planName}>{plan.planNameShort || plan.planName}</h2>
-      <div className="mb-4">
-        <span className="text-2xl font-bold mr-2">{formatCurrency(plan.monthlyPremium)}/mo</span>
-        {plan.originalPremium && (
-          <span className="text-gray-500 line-through">was {formatCurrency(plan.originalPremium)}</span>
-        )}
-      </div>
-
-      {/* Pre/Post Deductible Toggle */}
-      <div className="flex items-center justify-center mb-6">
-        <span className={`mr-2 text-sm ${!showPostDeductible ? 'font-semibold' : 'text-gray-500'}`}>Pre-Deductible</span>
-        <label htmlFor={`toggle-${plan.planName.replace(/\s+/g, '-')}`} className="flex items-center cursor-pointer">
-          <div className="relative">
-            <input
-              type="checkbox"
-              id={`toggle-${plan.planName.replace(/\s+/g, '-')}`}
-              className="sr-only"
-              checked={showPostDeductible}
-              onChange={() => setShowPostDeductible(!showPostDeductible)}
-            />
-            <div className="block bg-gray-300 w-10 h-6 rounded-full"></div>
-            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition ${showPostDeductible ? 'translate-x-full !bg-blue-500' : ''}`}></div>
-          </div>
-        </label>
-        <span className={`ml-2 text-sm ${showPostDeductible ? 'font-semibold' : 'text-gray-500'}`}>Post-Deductible</span>
-      </div>
-
-      {/* --- Highlights Section --- TODO */}
-      <div className="mb-6 border-t pt-4">
-        <h3 className="text-base font-semibold mb-3 text-gray-700">Highlights</h3>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-          <div><span className="font-medium">Deductible:</span> {formatCurrency(plan.deductible)}</div>
-          <div><span className="font-medium">Max Out-of-Pocket:</span> {formatCurrency(plan.maxOutOfPocket)}</div>
-          <div><span className="font-medium">Tier:</span> {plan.tier}</div>
-          <div><span className="font-medium">Network:</span> {plan.networkType}</div>
-          <div className="flex items-center"><span className="font-medium mr-1">Rating:</span> {renderStars(plan.rating)}</div>
-          {plan.specialFeatures?.map((feature, index) => (
-            <div key={index} className="flex items-center text-green-600">
-              <FaCheckCircle className="mr-1" /> {feature}
+        {/* --- Costs Shown Toggle --- */}
+        <div className="px-4 pb-4 border-b">
+            <div className="text-xs text-gray-500 mb-1">Costs Shown</div>
+            <div className="flex border border-gray-300 rounded overflow-hidden">
+                 <button
+                    onClick={() => setShowPostDeductible(false)}
+                    className={`flex-1 py-1.5 px-3 text-sm focus:outline-none ${!showPostDeductible ? 'bg-gray-100 font-semibold' : 'bg-white text-gray-600'}`}
+                 >
+                     Pre-Deductible
+                 </button>
+                 <button
+                     onClick={() => setShowPostDeductible(true)}
+                     className={`flex-1 py-1.5 px-3 text-sm focus:outline-none ${showPostDeductible ? 'bg-gray-100 font-semibold' : 'bg-white text-gray-600'}`}
+                 >
+                     Post-Deductible
+                 </button>
             </div>
-          ))}
         </div>
-      </div>
 
-      {/* --- Other Sections (Doctors, Drugs, etc.) --- TODO - Add structure based on spec */}
 
-      {/* --- CTA Buttons --- TODO */}
-       <div className="mt-auto pt-6 border-t">
-         <div className="flex justify-between gap-4">
-            <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition duration-150 ease-in-out">
+        {/* --- Sections Container --- */}
+        <div className="px-3"> {/* Add padding around all sections */}
+            {/* --- Highlights (Always Visible) --- */}
+            <div className="py-3 px-1">
+                <h3 className="font-semibold text-base mb-2 text-gray-700">Highlights</h3>
+                 <DataRow label="Monthly premium" value={<> <span className="text-lg">{formatCost(plan.monthlyPremium)}</span>/mo {plan.originalPremium && <span className="text-gray-500 line-through ml-1">was {formatCost(plan.originalPremium)}</span>} </>} />
+                <DataRow label="Deductible" value={formatCost(plan.deductible)} />
+                <DataRow label="Max out-of-pocket" value={formatCost(plan.maxOutOfPocket)} />
+                <DataRow label="Tier" value={plan.tier} />
+                <DataRow label="Network type" value={plan.networkType} />
+                <DataRow label="Rating" value={renderStars(plan.rating)} />
+                {plan.specialFeatures?.map((feature, index) => (
+                     <DataRow key={index} label="Special features" value={ <span className="flex items-center text-green-600"><FaCheckCircle className="mr-1 flex-shrink-0" /> {feature}</span>} />
+                ))}
+            </div>
+
+            {/* --- Doctors --- */}
+            <CollapsibleSection title="Doctors">
+                <DataRow label="Primary care visits" value={formatCost(plan.primaryCareVisitCost, '/visit')} />
+                <DataRow label="Specialist visits" value={formatCost(plan.specialistVisitCost, '/visit')} />
+            </CollapsibleSection>
+
+            {/* --- Prescription Drugs --- */}
+             <CollapsibleSection title="Prescription Drugs">
+                <DataRow label="Generic" value={formatCost(plan.genericDrugCost, '/fill')} />
+                <DataRow label="Brand" value={formatCost(plan.brandDrugCost)} />
+                <DataRow label="Preferred brand" value={formatCost(plan.preferredBrandDrugCost)} />
+                <DataRow label="Specialty" value={formatCost(plan.specialtyDrugCost)} />
+             </CollapsibleSection>
+
+             {/* --- Surgery & Treatment --- */}
+             <CollapsibleSection title="Surgery & Treatment">
+                 <DataRow label="Inpatient" value={formatCost(plan.inpatientCost)} />
+                 <DataRow label="Outpatient" value={formatCost(plan.outpatientCost)} />
+                 <DataRow label="Imaging" value={formatCost(plan.imagingCost)} />
+                 <DataRow label="Labs" value={formatCost(plan.labsCost)} />
+             </CollapsibleSection>
+
+             {/* --- Emergency Care --- */}
+             <CollapsibleSection title="Emergency Care">
+                 <DataRow label="Emergency room" value={formatCost(plan.emergencyRoomCost)} />
+                 <DataRow label="Urgent care" value={formatCost(plan.urgentCareCost, '/visit')} />
+             </CollapsibleSection>
+
+             {/* --- Pregnancy --- */}
+             <CollapsibleSection title="Pregnancy">
+                 <DataRow label="Prenatal care" value={formatCost(plan.prenatalCareCost)} />
+                 <DataRow label="Labor and delivery fees" value={formatCost(plan.laborDeliveryCost)} />
+                 <DataRow label="Postnatal care" value={formatCost(plan.postnatalCareCost)} />
+             </CollapsibleSection>
+        </div>
+
+        {/* --- CTA Buttons --- */}
+       <div className="mt-auto p-4 border-t">
+         <div className="flex justify-between gap-2">
+            <button className="flex-1 border border-gray-700 hover:bg-gray-100 text-gray-800 font-semibold py-2 px-3 rounded text-sm transition duration-150 ease-in-out">
               Details
             </button>
-            <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-150 ease-in-out">
+            <button className="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-3 rounded text-sm transition duration-150 ease-in-out">
               Enroll
             </button>
          </div>
