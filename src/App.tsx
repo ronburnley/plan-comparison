@@ -1,7 +1,8 @@
 import React from 'react';
 import './App.css';
-import PlanCard from './components/PlanCard'; // Uncommented
-import { HealthPlan } from './types/HealthPlan'; // Uncommented
+import PlanCard from './components/PlanCard';
+import KeyDifferences from './components/KeyDifferences'; // Import the new component
+import { HealthPlan } from './types/HealthPlan';
 // import Header from './components/Header'; // Commented out
 // import CoverageFinderForm from './components/CoverageFinderForm'; // Commented out
 // import InfoBox from './components/InfoBox'; // Commented out
@@ -12,74 +13,72 @@ import { HealthPlan } from './types/HealthPlan'; // Uncommented
 // --- Updated Sample Data ---
 const samplePlan1: HealthPlan = {
   recommended: true,
-  planName: 'Sendero Health Quality Care Bronze High Deductible / $50 PCP / $25 Generic Drugs / $100 Specialist', // Updated PCP
+  planName: 'Sendero Health Quality Care Bronze High Deductible / $50 PCP / $25 Generic Drugs / $100 Specialist',
   planNameShort: 'Sendero Bronze HDHP',
   monthlyPremium: 142.44,
-  originalPremium: 303.06, // Using was $303.06 from prev image
-  deductible: 7500, // From image
-  maxOutOfPocket: 9200, // From image
+  deductible: 7500,
+  maxOutOfPocket: 9200,
   tier: 'Bronze',
   networkType: 'HMO',
-  rating: 4, // Using 4 from previous sample
-  specialFeatures: ['Easy Pricing'], // From image
-  primaryCareVisitCost: 50, // From image
-  specialistVisitCost: 100, // From image
-  genericDrugCost: 25, // From image '/fill' added in component
-  brandDrugCost: 'Full price', // From image
-  preferredBrandDrugCost: 'Full price', // From image
-  specialtyDrugCost: 'Full price', // From image
-  inpatientCost: 'Full price', // From image
-  outpatientCost: 'Full price', // From image
-  imagingCost: 'Full price', // From image
-  labsCost: 'Full price', // From image
-  emergencyRoomCost: 'Full price', // From image
-  urgentCareCost: 75, // From image '/visit' added in component
-  prenatalCareCost: 'Full price', // From image
-  laborDeliveryCost: 'Full price', // From image
-  postnatalCareCost: 'Full price', // From image
+  rating: 4,
+  specialFeatures: ['Easy Pricing'],
+  primaryCareVisitCost: 50,
+  specialistVisitCost: 100,
+  genericDrugCost: 25,
+  brandDrugCost: 'Full price',
+  preferredBrandDrugCost: 'Full price',
+  specialtyDrugCost: 'Full price',
+  inpatientCost: 'Full price',
+  outpatientCost: 'Full price',
+  imagingCost: 'Full price',
+  labsCost: 'Full price',
+  emergencyRoomCost: 'Full price',
+  urgentCareCost: 75,
+  prenatalCareCost: 'Full price',
+  laborDeliveryCost: 'Full price',
+  postnatalCareCost: 'Full price',
 };
 
 const samplePlan2: HealthPlan = {
-  planName: 'Sendero Health Preferred Bronze / $25 PCP / $75 Specialist / $22 Generic Drugs', // From image
-  planNameShort: 'Sendero Preferred Bronze', // Shortened name
-  monthlyPremium: 160.59, // From image
-  originalPremium: 374.51, // From image
-  deductible: 8550, // From image
-  maxOutOfPocket: 9200, // From image
+  planName: 'Sendero Health Preferred Bronze / $25 PCP / $75 Specialist / $22 Generic Drugs',
+  planNameShort: 'Sendero Preferred Bronze',
+  monthlyPremium: 160.59,
+  deductible: 8550,
+  maxOutOfPocket: 9200,
   tier: 'Bronze',
   networkType: 'HMO',
-  rating: 4, // Using 4 to match image stars
-  // specialFeatures: [], // None shown in image for this plan
-  primaryCareVisitCost: 25, // From image
-  specialistVisitCost: 75, // From image
-  genericDrugCost: 22, // From image '/fill' added in component
-  brandDrugCost: 'Full price', // From image
-  preferredBrandDrugCost: 'Full price', // From image
-  specialtyDrugCost: 'Full price', // From image
-  inpatientCost: 'Full price', // From image
-  outpatientCost: 'Full price', // From image
-  imagingCost: 'Full price', // From image
-  labsCost: 'Full price', // From image
-  emergencyRoomCost: 'Full price', // From image
-  urgentCareCost: 'Full price', // From image (No price given)
-  prenatalCareCost: 'Full price', // From image
-  laborDeliveryCost: 'Full price', // From image
-  postnatalCareCost: 'Full price', // From image
+  rating: 4,
+  primaryCareVisitCost: 25,
+  specialistVisitCost: 75,
+  genericDrugCost: 22,
+  brandDrugCost: 'Full price',
+  preferredBrandDrugCost: 'Full price',
+  specialtyDrugCost: 'Full price',
+  inpatientCost: 'Full price',
+  outpatientCost: 'Full price',
+  imagingCost: 'Full price',
+  labsCost: 'Full price',
+  emergencyRoomCost: 'Full price',
+  urgentCareCost: 'Full price',
+  prenatalCareCost: 'Full price',
+  laborDeliveryCost: 'Full price',
+  postnatalCareCost: 'Full price',
 };
 // --- End Sample Data ---
 
 function App() {
   return (
-    // --- Switched back to Plan Comparison Layout ---
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      {/* Optional: Add a title back if needed */}
-      {/* <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Health Plan Comparison</h1> */}
+       <div className="max-w-7xl mx-auto"> {/* Added container for centering */}
+         {/* Render KeyDifferences above the cards */}
+         <KeyDifferences plan1={samplePlan1} plan2={samplePlan2} />
 
-      {/* Displaying two Plan Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-7xl mx-auto">
-        <PlanCard plan={samplePlan1} />
-        <PlanCard plan={samplePlan2} />
-      </div>
+         {/* Displaying two Plan Cards */}
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+           <PlanCard plan={samplePlan1} />
+           <PlanCard plan={samplePlan2} />
+         </div>
+       </div>
 
       {/* --- Form Layout Commented Out --- */}
       {/*
