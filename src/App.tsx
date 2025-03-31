@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import PlanCard from './components/PlanCard';
 import KeyDifferences from './components/KeyDifferences'; // Import the new component
+import ChatbotInterface from './components/ChatbotInterface'; // Import the chatbot component
 import { HealthPlan } from './types/HealthPlan';
 // import Header from './components/Header'; // Commented out
 // import CoverageFinderForm from './components/CoverageFinderForm'; // Commented out
@@ -73,8 +74,11 @@ function App() {
          {/* Render KeyDifferences above the cards */}
          <KeyDifferences plan1={samplePlan1} plan2={samplePlan2} />
 
+         {/* Render Chatbot Interface below Key Differences */}
+         <ChatbotInterface />
+
          {/* Displaying two Plan Cards */}
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mt-6 md:mt-8"> 
            <PlanCard plan={samplePlan1} />
            <PlanCard plan={samplePlan2} />
          </div>

@@ -80,9 +80,7 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan }) => {
                 </div>
             )}
             */}
-             {/* Placeholder for Plan Logo */}
-             <div className="h-8 w-20 bg-gray-200 mb-2 mt-2 flex items-center justify-center text-gray-500 text-xs rounded">Logo</div>
-
+             {/* Removed logo placeholder */}
             <h2 className="text-sm font-semibold mb-2 leading-tight" title={plan.planName}>{plan.planNameShort || plan.planName}</h2>
         </div>
 
