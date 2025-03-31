@@ -19,13 +19,41 @@ const formatDiffCost = (value: number | string): string => {
   return value;
 };
 
-const DifferenceRow: React.FC<{ label: string; value1: React.ReactNode; value2: React.ReactNode }> = ({ label, value1, value2 }) => (
-  <div className="flex justify-between items-center py-3 border-b">
-    <span className="text-sm text-gray-600 w-1/3 px-2">{label}</span>
-    <span className="text-sm font-medium text-gray-900 text-center w-1/3 px-2">{value1}</span>
-    <span className="text-sm font-medium text-gray-900 text-center w-1/3 px-2">{value2}</span>
-  </div>
-);
+interface DifferenceRowProps {
+  label: string;
+  value1: number | string;
+  value2: number | string;
+  suffix?: string; // Optional suffix like /mo, /visit
+}
+
+const DifferenceRow: React.FC<DifferenceRowProps> = ({ label, value1, value2, suffix = '' }) => {
+  let baseClass = "text-sm text-gray-900 text-center w-1/3 px-2 py-1"; // Added py-1 for vertical padding within highlight
+  let class1 = baseClass;
+  let class2 = baseClass;
+  // Apply highlighting (text color + bold) if both values are numeric
+  const betterHighlightClass = "text-green-600 font-semibold"; // Made green slightly brighter
+
+  if (typeof value1 === 'number' && typeof value2 === 'number') {
+    if (value1 < value2) {
+      class1 += ` ${betterHighlightClass}`;
+    } else if (value2 < value1) {
+      class2 += ` ${betterHighlightClass}`;
+    }
+  }
+  // Format values for display
+  const displayValue1 = `${formatDiffCost(value1)}${suffix}`;
+  const displayValue2 = `${formatDiffCost(value2)}${suffix}`;
+
+  return (
+    // Reduced py-3 to py-2 on the container div as padding is now on the spans
+    <div className="flex justify-between items-center py-2 border-b">
+      <span className="text-sm text-gray-600 w-1/3 px-2">{label}</span>
+      {/* Apply conditional classes and display formatted values */}
+      <span className={class1}>{displayValue1}</span>
+      <span className={class2}>{displayValue2}</span>
+    </div>
+  );
+};
 
 const KeyDifferences: React.FC<KeyDifferencesProps> = ({ plan1, plan2 }) => {
   return (
@@ -44,13 +72,13 @@ const KeyDifferences: React.FC<KeyDifferencesProps> = ({ plan1, plan2 }) => {
             <span className="text-sm text-gray-800 text-center w-1/3 px-2 truncate" title={plan2.planName}>{plan2.planNameShort || 'Plan 2'}</span>
           </div>
 
-          {/* Data Rows */}
-          <DifferenceRow label="Monthly Premium" value1={`${formatDiffCost(plan1.monthlyPremium)}/mo`} value2={`${formatDiffCost(plan2.monthlyPremium)}/mo`} />
-          <DifferenceRow label="Deductible" value1={formatDiffCost(plan1.deductible)} value2={formatDiffCost(plan2.deductible)} />
-          <DifferenceRow label="Max Out-of-Pocket" value1={formatDiffCost(plan1.maxOutOfPocket)} value2={formatDiffCost(plan2.maxOutOfPocket)} />
-          <DifferenceRow label="Primary Care Visit" value1={`${formatDiffCost(plan1.primaryCareVisitCost)}/visit`} value2={`${formatDiffCost(plan2.primaryCareVisitCost)}/visit`} />
-          <DifferenceRow label="Specialist Visit" value1={`${formatDiffCost(plan1.specialistVisitCost)}/visit`} value2={`${formatDiffCost(plan2.specialistVisitCost)}/visit`} />
-          <DifferenceRow label="Generic Drugs" value1={`${formatDiffCost(plan1.genericDrugCost)}/fill`} value2={`${formatDiffCost(plan2.genericDrugCost)}/fill`} />
+          {/* Data Rows: Pass raw values and suffix */}
+          <DifferenceRow label="Monthly Premium" value1={plan1.monthlyPremium} value2={plan2.monthlyPremium} suffix="/mo" />
+          <DifferenceRow label="Deductible" value1={plan1.deductible} value2={plan2.deductible} />
+          <DifferenceRow label="Max Out-of-Pocket" value1={plan1.maxOutOfPocket} value2={plan2.maxOutOfPocket} />
+          <DifferenceRow label="Primary Care Visit" value1={plan1.primaryCareVisitCost} value2={plan2.primaryCareVisitCost} suffix="/visit" />
+          <DifferenceRow label="Specialist Visit" value1={plan1.specialistVisitCost} value2={plan2.specialistVisitCost} suffix="/visit" />
+          <DifferenceRow label="Generic Drugs" value1={plan1.genericDrugCost} value2={plan2.genericDrugCost} suffix="/fill" />
         </div>
       </div>
     </div>
